@@ -1,5 +1,8 @@
 import itertools
 import sys
+import threading
+import time
+import shutil
 
 hex_chars = '0123456789abcdef'
 
@@ -25,6 +28,14 @@ def load_progress(start_char):
     except:
         return 1, "", 0
 
+def backup_results(start_char):
+    while True:
+        with open(f"found_btc_{start_char}", "r") as source, open(f"result_{start_char}", "a") as target:
+            content = source.read()
+            if content:
+                target.write("\n" + content)
+        time.sleep(100)
+
 if len(sys.argv) != 2:
     print("Использование: python3 ваш_скрипт.py [начальный символ]")
     sys.exit(1)
@@ -39,6 +50,10 @@ def generate_string(password, shift):
 length_start, password_start, shift_start = load_progress(start_char)
 
 counter = 0
+
+backup_thread = threading.Thread(target=backup_results, args=(start_char,))
+backup_thread.daemon = True
+backup_thread.start()
 
 for length in range(length_start, max_password_length + 1):
     if length == length_start:
@@ -56,3 +71,4 @@ for length in range(length_start, max_password_length + 1):
                 save_progress(length, password, shift + 1, start_char)           
             shift_start = 0
         password_start = ""
+        
