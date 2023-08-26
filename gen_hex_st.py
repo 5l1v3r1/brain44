@@ -88,7 +88,7 @@ for length in range(length_start, max_password_length + 1):
             print(password_str)
             
             counter += 1
-            if counter % 5000000 == 0:
+            if counter % 50000000 == 0:
                 save_progress(length, password, shift + 1, start_char)           
             shift_start = 0
         password_start = ""
